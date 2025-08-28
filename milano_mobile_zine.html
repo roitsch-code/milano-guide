@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Milano 2025">
+    <title>Milano 2025 - Mobile Guide</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f8f8;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.4;
+        }
+        
+        .mobile-container {
+            max-width: 100vw;
+            background: white;
+        }
+        
+        /* Header Navigation */
+        .mobile-header {
+            position: sticky;
+            top: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 16px;
+            z-index: 100;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding-bottom: 2px;
+        }
+        
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .nav-tab {
+            background: #f0f0f0;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .nav-tab.active {
+            background: #333;
+            color: white;
+        }
+        
+        /* Cover Section */
+        .cover-section {
+            background: linear-gradient(135deg, #ff6b9d20, #4ecdc420);
+            padding: 40px 20px;
+            text-align: center;
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .cover-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            font-size: 3.5rem;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+            transform: rotate(-1deg);
+        }
+        
+        .cover-subtitle {
+            font-size: 1rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 300;
+            margin-bottom: 32px;
+        }
+        
+        .cover-icons {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            font-size: 2rem;
+            margin-bottom: 32px;
+        }
+        
+        /* Map Section */
+        .map-section {
+            padding: 24px 16px;
+            background: #fafafa;
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 24px;
+        }
+        
+        .districts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        
+        .district-card {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 20px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .district-card:active {
+            transform: scale(0.98);
+        }
+        
+        .district-card .district-name {
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+        
+        .district-card .district-icon {
+            font-size: 2rem;
+            margin-bottom: 4px;
+        }
+        
+        /* District colors */
+        .bovisa { background: #b39ddb; }
+        .isola { background: #4ecdc4; }
+        .centro { background: #ffe66d; }
+        .porta-venezia { background: #ff6b9d; }
+        .navigli { background: #95e1d3; }
+        .porta-romana { background: #ffa726; }
+        
+        /* Content Sections */
+        .content-section {
+            display: none;
+            padding: 16px;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .district-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .district-mini-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 16px;
+            border: 2px solid #333;
+        }
+        
+        .district-info h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+        }
+        
+        .district-info p {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .locations-list {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .location-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid;
+            transition: all 0.2s ease;
+        }
+        
+        .location-item:active {
+            transform: scale(0.98);
+        }
+        
+        .location-item h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+        }
+        
+        .location-item .description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .location-item .navigate-btn {
+            background: #4ecdc4;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 8px;
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
+        
+        .location-item .navigate-btn:active {
+            transform: scale(0.95);
+            background: #45b7aa;
+        }
+        
+        /* Border colors for districts */
+        .yellow-theme .location-item { border-left-color: #ffe66d; }
+        .red-theme .location-item { border-left-color: #ff6b9d; }
+        .blue-theme .location-item { border-left-color: #4ecdc4; }
+        .orange-theme .location-item { border-left-color: #ffa726; }
+        .green-theme .location-item { border-left-color: #95e1d3; }
+        .purple-theme .location-item { border-left-color: #b39ddb; }
+        
+        /* Timeline Section */
+        .timeline-section {
+            padding: 16px;
+        }
+        
+        .day-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .day-header {
+            font-weight: 700;
+            font-size: 1.2rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: white;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-block;
+        }
+        
+        .thursday { background: linear-gradient(135deg, #ffe66d, #ffd93d); }
+        .friday { background: linear-gradient(135deg, #ff6b9d, #ff4081); }
+        .saturday { background: linear-gradient(135deg, #4ecdc4, #26c6da); }
+        
+        .time-entry {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+        
+        .time-stamp {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: #333;
+            font-size: 0.85rem;
+            min-width: 50px;
+            flex-shrink: 0;
+        }
+        
+        .activity-info {
+            font-size: 0.9rem;
+            color: #555;
+            flex-grow: 1;
+        }
+        
+        .activity-icon {
+            margin-right: 8px;
+        }
+        
+        /* Notes Section */
+        .notes-section {
+            padding: 24px 16px;
+            background: #f8f8f8;
+            text-align: center;
+        }
+        
+        .notes-field {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 12px;
+            height: 200px;
+            margin-bottom: 24px;
+            background-image: repeating-linear-gradient(transparent, transparent 24px, #e8e8e8 24px, #e8e8e8 26px);
+            position: relative;
+        }
+        
+        .notes-field::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #ff6b9d;
+            opacity: 0.4;
+        }
+        
+        .bottom-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 1.8rem;
+            margin-top: 24px;
+        }
+        
+        /* JavaScript */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Touch improvements */
+        button, .nav-tab, .district-card, .location-item {
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        /* Safe area for notch phones */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            .mobile-header {
+                padding-top: calc(12px + env(safe-area-inset-top));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- Header Navigation -->
+        <header class="mobile-header">
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-section="cover">Home</button>
+                <button class="nav-tab" data-section="map">Karte</button>
+                <button class="nav-tab" data-section="centro">Centro</button>
+                <button class="nav-tab" data-section="porta-venezia">P. Venezia</button>
+                <button class="nav-tab" data-section="isola">Isola</button>
+                <button class="nav-tab" data-section="porta-romana">P. Romana</button>
+                <button class="nav-tab" data-section="navigli">Navigli</button>
+                <button class="nav-tab" data-section="bovisa">Bovisa</button>
+                <button class="nav-tab" data-section="timeline">Timeline</button>
+                <button class="nav-tab" data-section="notes">Notes</button>
+            </nav>
+        </header>
+
+        <!-- Cover Section -->
+        <section id="cover" class="content-section cover-section active">
+            <h1 class="cover-title">MILANO 2025</h1>
+            <p class="cover-subtitle">Food · Fashion · Design · Sound</p>
+            <div class="cover-icons">
+                <span style="color: #ff6b9d;">🍕</span>
+                <span style="color: #4ecdc4;">👟</span>
+                <span style="color: #95e1d3;">🍷</span>
+                <span style="color: #ffe66d;">🎶</span>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <section id="map" class="content-section map-section">
+            <h2 class="section-title">City Guide</h2>
+            <p class="section-subtitle">Six Districts — One Weekend</p>
+            
+            <!-- Interactive Map Button -->
+            <div style="text-align: center; margin-bottom: 24px;">
+                <a href="https://maps.app.goo.gl/8BzxdSEGQAz7Z3Ay5" target="_blank" 
+                   style="display: inline-block; background: #333; color: white; padding: 16px 28px; border-radius: 25px; text-decoration: none; font-weight: 600; font-size: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2); margin-bottom: 12px;">
+                    📍 Alle Locations in Google Maps
+                </a>
+                <br>
+                <small style="color: #666; font-size: 0.8rem;">Öffnet deine kuratierte Milano-Karte mit allen Spots</small>
+            </div>
+            
+            <div class="districts-grid">
+                <div class="district-card bovisa" data-section="bovisa">
+                    <div class="district-name">Bovisa</div>
+                    <div class="district-icon">🏭</div>
+                </div>
+                <div class="district-card isola" data-section="isola">
+                    <div class="district-name">Isola</div>
+                    <div class="district-icon">👟</div>
+                </div>
+                <div class="district-card centro" data-section="centro">
+                    <div class="district-name">Centro Storico</div>
+                    <div class="district-icon">🛍️</div>
+                </div>
+                <div class="district-card porta-venezia" data-section="porta-venezia">
+                    <div class="district-name">Porta Venezia</div>
+                    <div class="district-icon">🍕</div>
+                </div>
+                <div class="district-card navigli" data-section="navigli">
+                    <div class="district-name">Navigli</div>
+                    <div class="district-icon">🍷</div>
+                </div>
+                <div class="district-card porta-romana" data-section="porta-romana">
+                    <div class="district-name">Porta Romana</div>
+                    <div class="district-icon">🎨</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Centro Storico -->
+        <section id="centro" class="content-section yellow-theme">
+            <div class="district-header">
+                <div class="district-mini-icon" style="background: #ffe66d;">🛍️</div>
+                <div class="district-info">
+                    <h2>Centro Storico</h2>
+                    <p>Historic Heart & Culture</p>
+                </div>
+            </div>
+            <div class="locations-list">
+                <div class="location-item">
+                    <h3>Trattoria Milanese</h3>
+                    <p class="description">Traditionelle Mailänder Küche</p>
+                    <span class="tip">→ Cotoletta oder Ossobuco</span>
+                </div>
+                <div class="location-item">
+                    <h3>Panzerotti Luini</h3>
+                    <p class="description">Kult-Snack seit 1949</p>
+                    <span class="tip">→ Klassik mit Tomate & Mozzarella</span>
+                </div>
+                <div class="location-item">
+                    <h3>Marchesi 1824</h3>
+                    <p class="description">Historische Patisserie</p>
+                    <span class="tip">→ Espresso + Pasticcini</span>
+                </div>
+                <div class="location-item">
+                    <h3>Patta Milano</h3>
+                    <p class="description">Streetwear-Flagship</p>
+                    <span class="tip">→ Neuheiten-Rack checken</span>
+                </div>
+                <div class="location-item">
+                    <h3>Stone Island</h3>
+                    <p class="description">Techwear-Materialinnovationen</p>
+                    <span class="tip">→ Shadow Project-Pieces</span>
+                </div>
+                <div class="location-item">
+                    <h3>NOWHERE - CAFE</h3>
+                    <p class="description">Minimalistisches Specialty Coffee</p>
+                    <span class="tip">→ Single-Origin Espresso</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Porta Venezia -->
+        <section id="porta-venezia" class="content-section red-theme">
+            <div class="district-header">
+                <div class="district-mini-icon" style="background: #ff6b9d;">🍕</div>
+                <div class="district-info">
+                    <h2>Porta Venezia</h2>
+                    <p>Food & Wine Scene</p>
+                </div>
+            </div>
+            <div class="locations-list">
+                <div class="location-item">
+                    <h3>Balay</h3>
+                    <p class="description">Natural-Wine-Bar, jung & vibey</p>
+                    <span class="tip">→ Orange Wine aus Sizilien</span>
+                </div>
+                <div class="location-item">
+                    <h3>Gesto</h3>
+                    <p class="description">Restaurant, Cocktail & Listening Bar</p>
+                    <span class="tip">→ Sala Malinconia für Vinyl-Sessions</span>
+                </div>
+                <div class="location-item">
+                    <h3>Onda Listening Bar</h3>
+                    <p class="description">Vinyl & Aperitivo</p>
+                    <span class="tip">→ Platz an der Theke</span>
+                </div>
+                <div class="location-item">
+                    <h3>Røst</h3>
+                    <p class="description">Neo-Trattoria + Naturwein</p>
+                    <span class="tip">→ Beef Tongue mit Kapern-Mousse</span>
+                </div>
+                <div class="location-item">
+                    <h3>Knam</h3>
+                    <p class="description">Schokoladen-Avantgarde</p>
+                    <span class="tip">→ Schoko-Mousse-Törtchen</span>
+                </div>
+                <div class="location-item">
+                    <h3>Giolina</h3>
+                    <p class="description">Stylische Pizzeria</p>
+                    <span class="tip">→ Margherita Gialla</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Isola -->
+        <section id="isola" class="content-section blue-theme">
+            <div class="district-header">
+                <div class="district-mini-icon" style="background: #4ecdc4;">👟</div>
+                <div class="district-info">
+                    <h2>Isola / Porta Nuova</h2>
+                    <p>Modern Dining & Fashion</p>
+                </div>
+            </div>
+            <div class="locations-list">
+                <div class="location-item">
+                    <h3>Ristorante Ratanà</h3>
+                    <p class="description">Modernisierte Mailänder Küche</p>
+                    <span class="tip">→ Risotto alla Milanese</span>
+                </div>
+                <div class="location-item">
+                    <h3>MOGO</h3>
+                    <p class="description">Restaurant + Listening Bar</p>
+                    <span class="tip">→ Set-Menü + Drink</span>
+                </div>
+                <div class="location-item">
+                    <h3>Dexter</h3>
+                    <p class="description">Tiny Listening Bar</p>
+                    <span class="tip">→ Früh da sein</span>
+                </div>
+                <div class="location-item">
+                    <h3>Section 80 Bar</h3>
+                    <p class="description">Cultural Hub & Listening Bar</p>
+                    <span class="tip">→ Bookshop + Vinyl Corner</span>
+                </div>
+                <div class="location-item">
+                    <h3>Nodo Bar</h3>
+                    <p class="description">Music-focused Bar in NoLo</p>
+                    <span class="tip">→ Live Sessions + Radio Raheem</span>
+                </div>
+                <div class="location-item">
+                    <h3>Slam Jam</h3>
+                    <p class="description">Streetwear-Institution</p>
+                    <span class="tip">→ Kollabs checken</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Porta Romana -->
+        <section id="porta-romana" class="content-section orange-theme">
+            <div class="district-header">
+                <div class="district-mini-icon" style="background: #ffa726;">🎨</div>
+                <div class="district-info">
+                    <h2>Porta Romana</h2>
+                    <p>Contemporary Art & Dining</p>
+                </div>
+            </div>
+            <div class="locations-list">
+                <div class="location-item">
+                    <h3>Ristorante Spore</h3>
+                    <p class="description">Fermentation-forward Neo-Trattoria</p>
+                    <span class="tip">→ Miso-Tomaten + Pairing</span>
+                </div>
+                <div class="location-item">
+                    <h3>Trattoria Trippa</h3>
+                    <p class="description">Kult-Trattoria</p>
+                    <span class="tip">→ Trippa alla Milanese</span>
+                </div>
+                <div class="location-item">
+                    <h3>Fondazione Prada</h3>
+                    <p class="description">Kunst + Wes-Anderson-Bar</p>
+                    <span class="tip">→ Espresso in Bar Luce</span>
+                </div>
+                <div class="location-item">
+                    <h3>Un Posto a Milano</h3>
+                    <p class="description">Cascina Cuccagna</p>
+                    <span class="tip">→ Innenhof-Terrasse</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigli -->
+        <section id="navigli" class="content-section green-theme">
+            <div class="district-header">
+                <div class="district-mini-icon" style="background: #95e1d3;">🍷</div>
+                <div class="district-info">
+                    <h2>Navigli / Ticinese</h2>
+                    <p>Canal Life & Natural Wine</p>
+                </div>
+            </div>
+            <div class="locations-list">
+                <div class="location-item">
+                    <h3>Vinoir</h3>
+                    <p class="description">Natural-Wine-Pionier</p>
+                    <span class="tip">→ Orange-Flight</span>
+                </div>
+                <div class="location-item">
+                    <h3>Futura Listening Bar</h3>
+                    <p class="description">Japanese-inspired vinyl sanctuary</p>
+                    <span class="tip">→ Intimate sonic connections</span>
+                </div>
+                <div class="location-item">
+                    <h3>Erba Brusca</h3>
+                    <p class="description">Urban Farm-Vibe</p>
+                    <span class="tip">→ Gemüsegericht des Tages</span>
+                </div>
+                <div class="location-item">
+                    <h3>Gelateria della Musica</h3>
+                    <p class="description">Kreatives Gelato</p>
+                    <span class="tip">→ Pistazie + Erdnuss</span>
+                </div>
+                <div class="location-item">
+                    <h3>Fidel's Bakery</h3>
+                    <p class="description">Modern Bakery</p>
+                    <span class="tip">→ Sauerteig-Sandwich</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bovisa -->
+        <section id="bovisa" class="content-section purple-theme">
+            <div class="district-header">
+                <div class="district-mini-icon" style="background: #b39ddb;">🏭</div>
+                <div class="district-info">
+                    <h2>Bovisa / Lancetti</h2>
+                    <p>Design & Innovation District</p>
+                </div>
+            </div>
+            <div class="locations-list">
+                <div class="location-item">
+                    <h3>Nilufar Depot</h3>
+                    <p class="description">Designhalle von Nina Yashar</p>
+                    <span class="tip">→ Mezzanin-Bühne</span>
+                </div>
+                <div class="location-item">
+                    <h3>SUNNEI Store</h3>
+                    <p class="description">Hybrid-Store & Café</p>
+                    <span class="tip">→ Kaffee + aktuelles Drop-Board</span>
+                </div>
+                <div class="location-item">
+                    <h3>Politecnico di Milano</h3>
+                    <p class="description">Campus Bovisa</p>
+                    <span class="tip">→ Hof + Werkstätten anschauen</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Timeline -->
+        <section id="timeline" class="content-section timeline-section">
+            <h2 class="section-title">Weekend Schedule</h2>
+            <p class="section-subtitle">Three Days — Six Districts</p>
+            
+            <div class="day-card">
+                <h3 class="day-header thursday">Donnerstag</h3>
+                <div class="time-entry">
+                    <span class="time-stamp">20:00</span>
+                    <span class="activity-info"><span class="activity-icon">✈️</span>Anreise + Hotel Check-in</span>
+                </div>
+                <div class="time-entry">
+                    <span class="time-stamp">21:30</span>
+                    <span class="activity-info"><span class="activity-icon">🍽️</span>Dinner: Trattoria Milanese oder Balay</span>
+                </div>
+                <div class="time-entry">
+                    <span class="time-stamp">23:00</span>
+                    <span class="activity-info"><span class="activity-icon">🎵</span>Optional: Onda Listening Bar</span>
+                </div>
+            </div>
+
+            <div class="day-card">
+                <h3 class="day-header friday">Freitag</h3>
+                <div class="time-entry">
+                    <span class="time-stamp">09:00</span>
+                    <span class="activity-info"><span class="activity-icon">☕</span>Coffee Start</span>
+                </div>
+                <div class="time-entry">
+                    <span class="time-stamp">13:00</span>
+                    <span class="activity-info"><span class="activity-icon">🍝</span>Lunch: Ratanà</span>
+                </div>
+                <div class="time-entry">
+                    <span class="time-stamp">15:00</span>
+                    <span class="activity-info"><span class="activity-icon">👟</span>Streetwear: Slam Jam, Patta, Special</span>
+                </div>
+                <div class="time-entry">
+                    <span class="time-stamp">19:00</span>
+                    <span class="activity-info"><span class="activity-icon">🍽️</span>Dinner: Spore</span>
+                </div>
+                <div class="time-entry">
+                    <span class="time-stamp">22:00</span>
+                    <span class="activity-info"><span class="activity-icon">🎵</span>Listening Bar: Dexter oder MOGO</span>
+                </div>
+            </div>
+
+            <div class="day-card">
+                <h3 class="day-header saturday">Samstag</h3>
+                <div class="time-entry">
+                    <span class="time-stamp">10:00</span>
+                    <span class="activity-info"><span class="activity-icon">🥐</span>Frühstück: Fidel's/Mascherpa</span>
+                </div>
+                <div class="time-entry">
+                    <span class="time-stamp">11:30</span>
+                    <span class="activity-info"><span class="activity-icon">🛍️</span>SUNNEI Store</span>
+                </div>
+                <div class="time-entry">
+                    <span class="time-stamp">13:00</span>
+                    <span class="activity-info"><span class="activity-icon">🍝</span>Lunch: Un Posto/Mangiari</span>
+                </div>
+                <div class="time-entry">
+                    <span class="time-stamp">15:00</span>
+                    <span class="activity-info"><span class="activity-icon">🎨</span>Fondazione Prada/Nilufar</span>
+                </div>
+                <div class="time-entry">
+                    <span class="time-stamp">18:00</span>
+                    <span class="activity-info"><span class="activity-icon">✈️</span>Abreise</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notes -->
+        <section id="notes" class="content-section notes-section">
+            <h2 class="section-title">Field Notes</h2>
+            <p class="section-subtitle">Found in Milano 2025</p>
+            <div class="notes-field"></div>
+            <div class="bottom-icons">
+                <span style="color: #ff6b9d;">🍕</span>
+                <span style="color: #4ecdc4;">👟</span>
+                <span style="color: #95e1d3;">🍷</span>
+                <span style="color: #ffe66d;">🎶</span>
+                <span style="color: #ffa726;">🖼️</span>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const sections = document.querySelectorAll('.content-section');
+            const districtCards = document.querySelectorAll('.district-card');
+            
+            function showSection(sectionId) {
+                // Hide all sections
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show target section
+                const targetSection = document.getElementById(sectionId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    targetSection.classList.add('fade-in');
+                    
+                    // Scroll to top
+                    window.scrollTo(0, 0);
+                }
+                
+                // Update active tab
+                tabs.forEach(tab => tab.classList.remove('active'));
+                document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+            }
+            
+            // Tab click handlers
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const sectionId = this.getAttribute('data-section');
+                    showSection(sectionId);
+                });
+            });
+            
+            // District card click handlers
+            districtCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const sectionId = this.getAttribute('data-section');
+                    showSection(sectionId);
+                });
+            });
+            
+            // Touch improvements
+            document.addEventListener('touchstart', function() {}, { passive: true });
+            
+            // Prevent zoom on double tap
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function(event) {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) {
+                    event.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+        });
+    </script>
+</body>
+</html>
